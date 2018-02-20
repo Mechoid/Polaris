@@ -17,11 +17,12 @@
 	if (istype(W, /obj/item/weapon/storage))
 		var/obj/item/weapon/storage/S = W
 		S.hide_from(usr)
-		for(var/obj/item/weapon/ore/O in S.contents)
-			S.remove_from_storage(O, src) //This will move the item to this item's contents
-		user << "<font color='blue'>You empty the satchel into the box.</font>"
+		spawn(0)
+			for(var/obj/item/weapon/ore/O in S.contents)
+				S.remove_from_storage(O, src) //This will move the item to this item's contents
+		to_chat(user,"<font color='blue'>You empty the satchel into the box.</font>")
 
-	update_ore_count()
+//	update_ore_count() //Only needs to update on examine.
 
 	return
 
@@ -37,8 +38,8 @@
 			stored_ore[O.name] = 1
 
 /obj/structure/ore_box/examine(mob/user)
-	user << "That's an [src]."
-	user << desc
+	to_chat(user, "That's an [src].")
+	to_chat(user, desc)
 
 	// Borgs can now check contents too.
 	if((!istype(user, /mob/living/carbon/human)) && (!istype(user, /mob/living/silicon/robot)))
@@ -50,16 +51,16 @@
 	add_fingerprint(user)
 
 	if(!contents.len)
-		user << "It is empty."
+		to_chat(user,"It is empty.")
 		return
 
 	if(world.time > last_update + 10)
 		update_ore_count()
 		last_update = world.time
 
-	user << "It holds:"
+	to_chat(user,"It holds:")
 	for(var/ore in stored_ore)
-		user << "- [stored_ore[ore]] [ore]"
+		to_chat(user,"- [stored_ore[ore]] [ore]")
 	return
 
 
