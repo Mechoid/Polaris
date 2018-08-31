@@ -395,8 +395,32 @@
 	return domove(direction)
 
 /obj/mecha/proc/domove(direction)
+	if(!can_move)
+		return 0
+	if(src.pr_inertial_movement.active())
+		return 0
+	if(!has_charge(step_energy_drain))
+		return 0
+	var/move_result = 0
+	if(hasInternalDamage(MECHA_INT_CONTROL_LOST))
+		move_result = mechsteprand()
+	else if(src.dir!=direction)
+		move_result = mechturn(direction)
+	else
+		move_result	= mechstep(direction)
+	if(move_result)
+		can_move = 0
+		use_power(step_energy_drain)
+		if(istype(src.loc, /turf/space))
+			if(!src.check_for_support())
+				src.pr_inertial_movement.start(list(src,direction))
+				src.log_message("Movement control lost. Inertial movement started.")
+		if(do_after(step_in))
+			can_move = 1
+		return 1
+	return 0
 
-	return call((proc_res["dyndomove"]||src), "dyndomove")(direction)
+/*	return call((proc_res["dyndomove"]||src), "dyndomove")(direction)
 
 /obj/mecha/proc/dyndomove(direction)
 	if(!can_move)
@@ -423,6 +447,8 @@
 			can_move = 1
 		return 1
 	return 0
+
+*/
 
 /obj/mecha/proc/handle_equipment_movement()
 	for(var/obj/item/mecha_parts/mecha_equipment/ME in equipment)
@@ -531,8 +557,25 @@
 /obj/mecha/proc/absorbDamage(damage,damage_type)
 	return call((proc_res["dynabsorbdamage"]||src), "dynabsorbdamage")(damage,damage_type)
 
+/obj/mecha/proc/getarmor(var/type)
+	return 0
+
+/obj/mecha/proc/getsoak(var/type)
+	return 0
+
+/obj/mecha/proc/get_armor_soak(var/def_zone = null, var/attack_flag = "melee", var/armour_pen = 0)
+	var/soaked = getsoak(def_zone, attack_flag)
+	//5 points of armor pen negate one point of soak
+	if(armour_pen)
+		soaked = max(soaked - (armour_pen/5), 0)
+	return soaked
+
+/*
+
 /obj/mecha/proc/dynabsorbdamage(damage,damage_type)
 	return damage*(listgetindex(damage_absorption,damage_type) || 1)
+
+*/
 
 /obj/mecha/airlock_crush(var/crush_damage)
 	..()
@@ -607,9 +650,48 @@
 
 /obj/mecha/bullet_act(var/obj/item/projectile/Proj) //wrapper
 	src.log_message("Hit by projectile. Type: [Proj.name]([Proj.check_armour]).",1)
-	call((proc_res["dynbulletdamage"]||src), "dynbulletdamage")(Proj) //calls equipment
+
+	if(prob(src.deflect_chance))
+		src.occupant_message("<span class='notice'>The armor deflects incoming projectile.</span>")
+		src.visible_message("The [src.name] armor deflects the projectile")
+		src.log_append_to_last("Armor saved.")
+		return
+
+	if(Proj.damage_type == HALLOSS)
+		use_power(Proj.agony * 5)
+
+	if(!(Proj.nodamage))
+		var/ignore_threshold
+		if(istype(Proj, /obj/item/projectile/beam/pulse))
+			ignore_threshold = 1
+		src.take_damage(Proj.damage, Proj.check_armour)
+		if(prob(25)) spark_system.start()
+		src.check_for_internal_damage(list(MECHA_INT_FIRE,MECHA_INT_TEMP_CONTROL,MECHA_INT_TANK_BREACH,MECHA_INT_CONTROL_LOST,MECHA_INT_SHORT_CIRCUIT),ignore_threshold)
+
+		//AP projectiles have a chance to cause additional damage
+		if(Proj.penetrating)
+			var/distance = get_dist(Proj.starting, get_turf(loc))
+			var/hit_occupant = 1 //only allow the occupant to be hit once
+			for(var/i in 1 to min(Proj.penetrating, round(Proj.damage/15)))
+				if(src.occupant && hit_occupant && prob(20))
+					Proj.attack_mob(src.occupant, distance)
+					hit_occupant = 0
+				else
+					src.check_for_internal_damage(list(MECHA_INT_FIRE,MECHA_INT_TEMP_CONTROL,MECHA_INT_TANK_BREACH,MECHA_INT_CONTROL_LOST,MECHA_INT_SHORT_CIRCUIT), 1)
+
+				Proj.penetrating--
+
+				if(prob(15))
+					break //give a chance to exit early
+
+	Proj.on_hit(src) //on_hit just returns if it's argument is not a living mob so does this actually do anything?
+	return
+
+//	call((proc_res["dynbulletdamage"]||src), "dynbulletdamage")(Proj) //calls equipment
+
 	..()
 	return
+/*
 
 /obj/mecha/proc/dynbulletdamage(var/obj/item/projectile/Proj)
 	if(prob(src.deflect_chance))
@@ -647,6 +729,8 @@
 
 	Proj.on_hit(src) //on_hit just returns if it's argument is not a living mob so does this actually do anything?
 	return
+
+*/
 
 /obj/mecha/ex_act(severity)
 	src.log_message("Affected by explosion of severity: [severity].",1)
@@ -707,6 +791,8 @@
 		src.check_for_internal_damage(list(MECHA_INT_FIRE, MECHA_INT_TEMP_CONTROL))
 	return
 
+/*
+
 /obj/mecha/proc/dynattackby(obj/item/weapon/W as obj, mob/user as mob)
 	user.setClickCooldown(user.get_attack_speed(W))
 	src.log_message("Attacked by [W]. Attacker - [user]")
@@ -724,6 +810,8 @@
 		src.take_damage(W.force,W.damtype)
 		src.check_for_internal_damage(list(MECHA_INT_TEMP_CONTROL,MECHA_INT_TANK_BREACH,MECHA_INT_CONTROL_LOST))
 	return
+
+*/
 
 //////////////////////
 ////// AttackBy //////
@@ -849,7 +937,25 @@
 		return
 
 	else
-		call((proc_res["dynattackby"]||src), "dynattackby")(W,user)
+		user.setClickCooldown(user.get_attack_speed(W))
+		src.log_message("Attacked by [W]. Attacker - [user]")
+		if(prob(src.deflect_chance))
+			user << "<span class='danger'>\The [W] bounces off [src.name].</span>"
+			src.log_append_to_last("Armor saved.")
+	/*
+			for (var/mob/V in viewers(src))
+				if(V.client && !(V.blinded))
+					V.show_message("The [W] bounces off [src.name] armor.", 1)
+	*/
+		else
+			src.occupant_message("<font color='red'><b>[user] hits [src] with [W].</b></font>")
+			user.visible_message("<font color='red'><b>[user] hits [src] with [W].</b></font>", "<font color='red'><b>You hit [src] with [W].</b></font>")
+			src.take_damage(W.force,W.damtype)
+			src.check_for_internal_damage(list(MECHA_INT_TEMP_CONTROL,MECHA_INT_TANK_BREACH,MECHA_INT_CONTROL_LOST))
+		return
+
+//		call((proc_res["dynattackby"]||src), "dynattackby")(W,user)
+
 /*
 		src.log_message("Attacked by [W]. Attacker - [user]")
 		if(prob(src.deflect_chance))
