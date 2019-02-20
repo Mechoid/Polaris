@@ -893,23 +893,23 @@
 				to_chat(M, "<span class='critical'>It feels like your body is revolting!</span>")
 		M.Confuse(7)
 		M.adjustFireLoss(removed * 2)
-		M.adjustToxLoss(removed * 2)
+		M.adjustToxLoss(removed * 7)
 		if(dose >= 5 && M.toxloss >= 10) //It all starts going wrong.
-			M.adjustBruteLoss(removed * 3)
+			M.adjustBruteLoss(removed * 9)
 			M.eye_blurry = min(20, max(0, M.eye_blurry + 10))
-			if(prob(25))
+			if(prob(10 + dose))
 				if(prob(25))
 					to_chat(M, "<span class='danger'>Your pneumatic fluids seize for a moment.</span>")
 				M.Stun(2)
 				spawn(30)
 					M.Weaken(2)
 		if(dose >= 10 || M.toxloss >= 25) //Internal skeletal tubes are rupturing, allowing the chemical to breach them.
-			M.adjustToxLoss(removed * 4)
+			M.adjustToxLoss(removed * 3)
 			M.make_jittery(5)
 		if(dose >= 20 || M.toxloss >= 60) //Core disentigration, cellular mass begins treating itself as an enemy, while maintaining regeneration. Slime-cancer.
 			M.adjustBrainLoss(2 * removed)
-			M.nutrition = max(H.nutrition - 20, 0)
-		if(M.bruteloss >= 60 && M.toxloss >= 60 && M.brainloss >= 30) //Total Structural Failure. Limbs start splattering.
+			M.nutrition = max(H.nutrition - (30 * removed), 0)
+		if(M.bruteloss >= 30 && M.toxloss >= 60 && M.brainloss >= 30) //Total Structural Failure. Limbs start splattering.
 			var/obj/item/organ/external/O = pick(H.organs)
 			if(prob(20) && !istype(O, /obj/item/organ/external/chest/unbreakable/slime) && !istype(O, /obj/item/organ/external/groin/unbreakable/slime))
 				to_chat(M, "<span class='critical'>You feel your [O] begin to dissolve, before it sloughs from your body.</span>")
