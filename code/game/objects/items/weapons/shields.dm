@@ -54,7 +54,20 @@
 	return 0
 
 /obj/item/weapon/shield/proc/get_block_chance(mob/user, var/damage, atom/damage_source = null, mob/attacker = null)
-	return base_block_chance
+	. = base_block_chance
+	if(isliving(user) && config.mechanical_skill_system)
+		var/mob/living/L = user
+		if(istype(damage_source, /obj/item/projectile))
+			. = min(base_block_chance * 0.8, round(base_block_chance * L.get_skill_level(SKILL_MELEE) / 3) - round(base_block_chance / 10))
+		else if((istype(damage_source, /mob/living) || istype(damage_source, /obj/item)) && (istype(attacker) && get_dist(user, attacker))) // Melee begins.
+			var/mob/living/accoster = attacker
+			. = base_block_chance + ((base_block_chance / 10) * L.get_skill_difference(SKILL_MELEE, accoster)) // Superior
+		if(!L.skill_check(SKILL_MELEE, SKILL_LEVEL_ONE))
+			. = max(0,  . - round(base_block_chance * 0.3))
+		else if(L.skill_check(SKILL_MELEE, SKILL_LEVEL_THREE))
+			. *= 1.1
+			. = min(100, .)
+	return .
 
 /obj/item/weapon/shield/riot
 	name = "riot shield"
@@ -142,8 +155,8 @@
 	if(istype(damage_source, /obj/item/projectile))
 		var/obj/item/projectile/P = damage_source
 		if((is_sharp(P) && damage > 10) || istype(P, /obj/item/projectile/beam))
-			return (base_block_chance - round(damage / 3)) //block bullets and beams using the old block chance
-	return base_block_chance
+			return (..(user, damage, damage_source, attacker) + 15 - round(damage / 4)) //block bullets and beams using the old block chance
+	return ..(user, damage, damage_source, attacker)
 
 /obj/item/weapon/shield/energy/attack_self(mob/living/user as mob)
 	if ((CLUMSY in user.mutations) && prob(50))

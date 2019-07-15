@@ -36,12 +36,24 @@
 /obj/item/weapon/tank/jetpack/verb/toggle_rockets()
 	set name = "Toggle Jetpack Stabilization"
 	set category = "Object"
+
+	var/mob/living/L = usr
+	if(istype(L) && !L.skill_check(SKILL_EVA, SKILL_LEVEL_TWO))
+		to_chat(L, "<span class='notice'>You aren't entirely certain how to operate \the [src].</span>")
+		return
+
 	stabilization_on = !( stabilization_on )
 	usr << "You toggle the stabilization [stabilization_on? "on":"off"]."
 
 /obj/item/weapon/tank/jetpack/verb/toggle()
 	set name = "Toggle Jetpack"
 	set category = "Object"
+
+	var/mob/living/L = usr
+
+	if(istype(L) && !L.skill_check(SKILL_EVA, SKILL_LEVEL_ONE))
+		to_chat(L, "<span class='notice'>You aren't entirely certain how to operate \the [src].</span>")
+		return
 
 	on = !on
 	if(on)

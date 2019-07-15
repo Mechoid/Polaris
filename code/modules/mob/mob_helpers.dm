@@ -16,8 +16,25 @@
 	return round(log(2, mob_size_A/mob_size_B), 1)
 
 /mob/proc/can_wield_item(obj/item/W)
-	if(W.w_class >= ITEMSIZE_LARGE && issmall(src))
-		return FALSE //M is too small to wield this
+	var/skill_mastery = FALSE
+
+	if(isliving(src))
+		var/mob/living/L = src
+		var/target_skill = null
+
+		if(istype(W, /obj/item/weapon/gun))
+			target_skill = SKILL_GUNS
+		else
+			target_skill = SKILL_MELEE
+
+		if(!isnull(target_skill))
+			if(L.skill_check(target_skill, SKILL_LEVEL_THREE))
+				skill_mastery = TRUE
+			else if(!L.skill_check(target_skill, SKILL_LEVEL_ONE))
+				return FALSE
+
+	if(W.w_class >= ITEMSIZE_LARGE && issmall(src) && !skill_mastery)
+		return FALSE //M is too small to wield this, and lacks the skill to overcome this issue.
 	return TRUE
 
 /proc/istiny(A)

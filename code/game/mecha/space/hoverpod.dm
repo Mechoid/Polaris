@@ -26,6 +26,11 @@
 	max_universal_equip = 1
 	max_special_equip = 1
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE,
+		SKILL_EVA = SKILL_LEVEL_TWO
+		)
+
 /obj/mecha/working/hoverpod/New()
 	..()
 	ion_trail = new /datum/effect/effect/system/ion_trail_follow()

@@ -168,7 +168,7 @@
 					accurate = 1
 				if(I_HURT, I_GRAB)
 					// We're in a fighting stance, there's a chance we block
-					if(src.canmove && src!=H && prob(20))
+					if(src.canmove && src!=H && prob(30 - 10 + 5 * get_skill_difference(SKILL_UNARMED, H)))
 						block = 1
 
 			if (M.grabbed_by.len)
@@ -213,7 +213,7 @@
 					miss_type = 1
 
 				if(prob(80))
-					hit_zone = ran_zone(hit_zone, 70) //70% chance to hit what you're aiming at seems fair?
+					hit_zone = ran_zone(hit_zone, 40 + H.get_skill_level(SKILL_UNARMED)) //70% chance to hit what you're aiming at seems fair?
 				if(prob(15) && hit_zone != BP_TORSO) // Missed!
 					if(!src.lying)
 						attack_message = "[H] attempted to strike [src], but missed!"
@@ -269,6 +269,9 @@
 			// Finally, apply damage to target
 			apply_damage(real_damage, hit_dam_type, hit_zone, armour, soaked, sharp=attack.sharp, edge=attack.edge)
 
+			if(H.skill_check(SKILL_UNARMED, SKILL_LEVEL_THREE)) // 20% of unarmed damage, when a Martial Artist, will be applied again as agony.
+				apply_damage(real_damage * 0.2, AGONY, hit_zone, armour, soaked, FALSE, FALSE)
+
 		if(I_DISARM)
 			add_attack_logs(H,src,"Disarmed")
 
@@ -281,15 +284,16 @@
 			var/list/holding = list(get_active_hand() = 40, get_inactive_hand = 20)
 
 			//See if they have any guns that might go off
-			for(var/obj/item/weapon/gun/W in holding)
-				if(W && prob(holding[W]))
-					var/list/turfs = list()
-					for(var/turf/T in view())
-						turfs += T
-					if(turfs.len)
-						var/turf/target = pick(turfs)
-						visible_message("<span class='danger'>[src]'s [W] goes off during the struggle!</span>")
-						return W.afterattack(target,src)
+			if(!skill_check(SKILL_GUNS, SKILL_LEVEL_THREE))
+				for(var/obj/item/weapon/gun/W in holding)
+					if(W && prob(holding[W]))
+						var/list/turfs = list()
+						for(var/turf/T in view())
+							turfs += T
+						if(turfs.len)
+							var/turf/target = pick(turfs)
+							visible_message("<span class='danger'>[src]'s [W] goes off during the struggle!</span>")
+							return W.afterattack(target,src)
 
 			if(last_push_time + 30 > world.time)
 				visible_message("<span class='warning'>[M] has weakly pushed [src]!</span>")
@@ -316,6 +320,15 @@
 				//Actually disarm them
 				for(var/obj/item/I in holding)
 					if(I)
+						if(get_skill_difference(SKILL_UNARMED, H) > 1 && prob(20))
+							visible_message("<span class='notice'>[M] has tried to disarm [src], but they deflected the momentum!</span>")
+							return
+						else if(istype(I, /obj/item/weapon/gun) && skill_check(SKILL_GUNS, SKILL_LEVEL_THREE) && prob(30))
+							visible_message("<span class='notice'>[M] has tried to disarm [src], but they keep their grip on their gun!</span>")
+							return
+						else if(prob(-10 + 10 * get_skill_level(SKILL_MELEE)))
+							visible_message("<span class='danger'>[M] has tried to disarm [src], but they keep their grip on their weapon!</span>")
+							return
 						drop_from_inventory(I)
 						visible_message("<span class='danger'>[M] has disarmed [src]!</span>")
 						playsound(loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)

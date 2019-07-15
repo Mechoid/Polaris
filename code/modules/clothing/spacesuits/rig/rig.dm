@@ -93,6 +93,10 @@
 	var/datum/wires/rig/wires
 	var/datum/effect/effect/system/spark_spread/spark_system
 
+	required_skills = list(
+		SKILL_EVA = SKILL_LEVEL_TWO
+		)
+
 /obj/item/weapon/rig/examine()
 	to_chat(usr, "This is \icon[src][src.name].")
 	to_chat(usr, "[src.desc]")
@@ -659,12 +663,15 @@
 			return 0
 		if(user.back != src && user.belt != src)
 			return 0
+		if(!user.check_all_skills(required_skills))
+			to_chat(user, "<span class='notice'>\The [src]'s interface is too complex.</span>")
+			return 0
 		else if(!src.allowed(user))
-			user << "<span class='danger'>Unauthorized user. Access denied.</span>"
+			to_chat(user, "<span class='danger'>Unauthorized user. Access denied.</span>")
 			return 0
 
 	else if(!ai_override_enabled)
-		user << "<span class='danger'>Synthetic access disabled. Please consult hardware provider.</span>"
+		to_chat(user, "<span class='danger'>Synthetic access disabled. Please consult hardware provider.</span>")
 		return 0
 
 	return 1
@@ -1064,6 +1071,12 @@
 		return belt
 	else
 		return null
+
+/obj/item/weapon/rig/get_slowdown() // Does the skillcheck shift for RIG encumberance.
+	. = slowdown
+	if(wearer && wearer.skill_check(SKILL_EVA, SKILL_LEVEL_THREE) && . > 0)
+		. *= 0.8
+	return .
 
 //Boot animation screen objects
 /obj/screen/rig_booting

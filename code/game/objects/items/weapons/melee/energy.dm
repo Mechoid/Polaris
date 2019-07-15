@@ -175,7 +175,7 @@
 	icon_state = initial(icon_state)
 
 /obj/item/weapon/melee/energy/sword/handle_shield(mob/user, var/damage, atom/damage_source = null, mob/attacker = null, var/def_zone = null, var/attack_text = "the attack")
-	if(active && default_parry_check(user, attacker, damage_source) && prob(60))
+	if(active && default_parry_check(user, attacker, damage_source) && prob(get_melee_defend_chance(user)))
 		user.visible_message("<span class='danger'>\The [user] parries [attack_text] with \the [src]!</span>")
 
 		var/datum/effect/effect/system/spark_spread/spark_system = new /datum/effect/effect/system/spark_spread()
@@ -183,7 +183,7 @@
 		spark_system.start()
 		playsound(user.loc, 'sound/weapons/blade1.ogg', 50, 1)
 		return 1
-	if(active && unique_parry_check(user, attacker, damage_source) && prob(projectile_parry_chance))
+	if(active && unique_parry_check(user, attacker, damage_source) && prob(get_projectile_defend_chance(user)))
 		user.visible_message("<span class='danger'>\The [user] deflects [attack_text] with \the [src]!</span>")
 
 		var/datum/effect/effect/system/spark_spread/spark_system = new /datum/effect/effect/system/spark_spread()
@@ -398,7 +398,7 @@
 		spawn(1) if(src) qdel(src)
 
 /obj/item/weapon/melee/energy/blade/handle_shield(mob/user, var/damage, atom/damage_source = null, mob/attacker = null, var/def_zone = null, var/attack_text = "the attack")
-	if(default_parry_check(user, attacker, damage_source) && prob(60))
+	if(default_parry_check(user, attacker, damage_source) && prob(get_melee_defend_chance(user)))
 		user.visible_message("<span class='danger'>\The [user] parries [attack_text] with \the [src]!</span>")
 
 		var/datum/effect/effect/system/spark_spread/spark_system = new /datum/effect/effect/system/spark_spread()
@@ -406,7 +406,7 @@
 		spark_system.start()
 		playsound(user.loc, 'sound/weapons/blade1.ogg', 50, 1)
 		return 1
-	if(unique_parry_check(user, attacker, damage_source) && prob(projectile_parry_chance))
+	if(unique_parry_check(user, attacker, damage_source) && prob(get_projectile_defend_chance(user)))
 		user.visible_message("<span class='danger'>\The [user] deflects [attack_text] with \the [src]!</span>")
 
 		var/datum/effect/effect/system/spark_spread/spark_system = new /datum/effect/effect/system/spark_spread()

@@ -62,6 +62,23 @@ avoid code duplication. This includes items that may sometimes act as a standard
 	var/speed = base_attack_cooldown
 	if(W && istype(W))
 		speed = W.attackspeed
+
+		if(!istype(W,/obj/item/weapon/gun))
+			if(skill_check(SKILL_MELEE, SKILL_LEVEL_THREE))
+				speed *= 0.8
+			else if(skill_check(SKILL_MELEE, SKILL_LEVEL_ONE))
+				speed *= 1.2
+			else if(skill_check(SKILL_MELEE, SKILL_LEVEL_ZERO))
+				speed *= 1.4
+
+		else if(istype(W, /obj/item/weapon/gun))
+			if(skill_check(SKILL_GUNS, SKILL_LEVEL_THREE))
+				speed *= 0.9
+			else if(skill_check(SKILL_GUNS, SKILL_LEVEL_ONE))
+				speed *= 1.2
+			else if(skill_check(SKILL_GUNS, SKILL_LEVEL_ZERO))
+				speed *= 1.3
+
 	for(var/datum/modifier/M in modifiers)
 		if(!isnull(M.attack_speed_percent))
 			speed *= M.attack_speed_percent
@@ -106,6 +123,12 @@ avoid code duplication. This includes items that may sometimes act as a standard
 	for(var/datum/modifier/M in user.modifiers)
 		if(!isnull(M.outgoing_melee_damage_percent))
 			power *= M.outgoing_melee_damage_percent
+
+	if(user.skill_check(SKILL_MELEE, SKILL_LEVEL_THREE))
+		if(hit_zone == BP_TORSO && istype(src, /obj/item/weapon/material/twohanded))
+			power *= 1.2
+		else
+			power *= 1.1
 
 	if(HULK in user.mutations)
 		power *= 2

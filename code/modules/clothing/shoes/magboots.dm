@@ -21,6 +21,10 @@
 		slowdown += 3
 
 /obj/item/clothing/shoes/magboots/attack_self(mob/user)
+	var/mob/living/L = user
+	if(!L.skill_check(SKILL_EVA, SKILL_LEVEL_ONE))
+		to_chat(L, "<span class='warning'>You aren't entirely certain how to operate \the [src].</span>")
+		return
 	if(magpulse)
 		item_flags &= ~NOSLIP
 		magpulse = 0

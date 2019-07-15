@@ -18,6 +18,7 @@
  */
 /obj/item/weapon/material/twohanded
 	w_class = ITEMSIZE_LARGE
+	defend_chance = 15
 	var/wielded = 0
 	var/force_wielded = 0
 	var/force_unwielded
@@ -57,6 +58,7 @@
 	..()
 	update_icon()
 
+/*
 //Allow a small chance of parrying melee attacks when wielded - maybe generalize this to other weapons someday
 /obj/item/weapon/material/twohanded/handle_shield(mob/user, var/damage, atom/damage_source = null, mob/attacker = null, var/def_zone = null, var/attack_text = "the attack")
 	if(wielded && default_parry_check(user, attacker, damage_source) && prob(15))
@@ -64,6 +66,7 @@
 		playsound(user.loc, 'sound/weapons/punchmiss.ogg', 50, 1)
 		return 1
 	return 0
+*/ // Future is now. - Mech
 
 /obj/item/weapon/material/twohanded/update_icon()
 	icon_state = "[base_icon][wielded]"

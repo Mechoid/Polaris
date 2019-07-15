@@ -314,7 +314,10 @@ var/list/mob/living/forced_ambiance_list = new
 		var/mob/living/carbon/human/H = mob
 		if(H.buckled)
 			return // Being buckled to something solid keeps you in place.
-		if(istype(H.shoes, /obj/item/clothing/shoes/magboots) && (H.shoes.item_flags & NOSLIP))
+		if(istype(H.shoes, /obj/item/clothing/shoes/magboots) && (H.shoes.item_flags & NOSLIP) && H.skill_check(SKILL_EVA, SKILL_LEVEL_ONE)) // If you have no idea how to use magboots, you're gonna fall on your face when Real Gravity shows up.
+			return
+		if(H.skill_check(SKILL_EVA, SKILL_LEVEL_THREE))
+			to_chat(H, "<span class='notice'>Your intensive E.V.A. training allows you to land upright and unharmed.</span>")
 			return
 
 		if(H.m_intent == "run")
@@ -323,7 +326,7 @@ var/list/mob/living/forced_ambiance_list = new
 		else
 			H.AdjustStunned(3)
 			H.AdjustWeakened(3)
-		mob << "<span class='notice'>The sudden appearance of gravity makes you fall to the floor!</span>"
+		to_chat(H, "<span class='notice'>The sudden appearance of gravity makes you fall to the floor!</span>")
 		playsound(get_turf(src), "bodyfall", 50, 1)
 
 /area/proc/prison_break()

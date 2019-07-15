@@ -22,6 +22,10 @@
 	var/allow_duplicate = FALSE
 	var/ready_sound = 'sound/mecha/mech_reload_default.ogg' //Sound to play once the fire delay passed.
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE
+		)
+
 /obj/item/mecha_parts/mecha_equipment/proc/do_after_cooldown(target=1)
 	sleep(equip_cooldown)
 	set_ready_state(1)
@@ -117,6 +121,10 @@
 	if(!chassis)
 		return 0
 	if(!equip_ready)
+		return 0
+	var/mob/living/L = chassis.occupant
+	if(!istype(L) && !L.check_all_skills(required_skills))
+		occupant_message("<span class='warning'>You can't seem to get \the [src] to operate.</span>")
 		return 0
 	if(energy_drain && !chassis.has_charge(energy_drain))
 		return 0

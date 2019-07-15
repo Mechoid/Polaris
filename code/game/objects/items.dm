@@ -642,6 +642,11 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 	else if(!zoom && usr.get_active_hand() != src)
 		usr << "You are too distracted to look through the [devicename], perhaps if it was in your active hand this might work better"
 		cannotzoom = 1
+	else if(isliving(usr) && istype(src, /obj/item/weapon/gun))
+		var/mob/living/L = usr
+		if(!L.skill_check(SKILL_GUNS, SKILL_LEVEL_ONE))
+			to_chat(L, "<span class='notice'>You can't seem to see much other than a smudge..</span>")
+			return
 
 	//We checked above if they are a human and returned already if they weren't.
 	var/mob/living/carbon/human/H = usr
@@ -826,6 +831,10 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 //STUB
 /obj/item/proc/apply_accessories(var/image/standing)
 	return standing
+
+// Returns the item's slowdown. This can be modified by some objects.
+/obj/item/proc/get_slowdown()
+	return slowdown
 
 /*
  *	Assorted tool procs, so any item can emulate any tool, if coded

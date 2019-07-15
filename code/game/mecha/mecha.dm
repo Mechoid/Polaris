@@ -95,6 +95,10 @@
 	var/list/cargo = list()
 	var/cargo_capacity = 3
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE
+		)
+
 
 /obj/mecha/drain_power(var/drain_check)
 
@@ -387,7 +391,7 @@
 		events.fireEvent("onMove",get_turf(src))
 	return
 
-/obj/mecha/relaymove(mob/user,direction)
+/obj/mecha/relaymove(mob/living/user,direction)
 	if(user != src.occupant) //While not "realistic", this piece is player friendly.
 		if(istype(user,/mob/living/carbon/brain))
 			to_chat(user,"You try to move, but you are not the pilot! The exosuit doesn't respond.")
@@ -400,6 +404,13 @@
 			src.occupant_message("Unable to move while connected to the air system port")
 			last_message = world.time
 		return 0
+	if(!user.check_all_skills(required_skills))
+		if(prob(30 - 5 * (user.get_skill_level(required_skills[1] - 1))))
+			occupant_message("<span class='warning'>You struggle with the exosuit's controls. It doesn't respond.</span>")
+			return
+		else if(prob(max(5, 30 - 10 * (user.get_skill_level(required_skills[1] - 1)))))
+			occupant_message("<span class='warning'>You struggle with the exosuit's controls. It shudders erratically.</span>")
+			direction = pick(cardinal)
 	if(state)
 		occupant_message("<font color='red'>Maintenance protocols in effect</font>")
 		return
@@ -1055,8 +1066,9 @@
 	if(!src.occupant) return
 	if(usr!=src.occupant)
 		return
+	var/mob/living/user = usr
 	var/obj/machinery/atmospherics/portables_connector/possible_port = locate(/obj/machinery/atmospherics/portables_connector/) in loc
-	if(possible_port)
+	if(possible_port && user.skill_check(required_skills[1], required_skills[required_skills[1]]))
 		if(connect(possible_port))
 			src.occupant_message("<span class='notice'>\The [name] connects to the port.</span>")
 			src.verbs += /obj/mecha/verb/disconnect_from_port

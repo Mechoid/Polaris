@@ -107,7 +107,7 @@
 	// Loop through some slots, and add up their slowdowns.
 	// Includes slots which can provide armor, the back slot, and suit storage.
 	for(var/obj/item/I in list(wear_suit, w_uniform, back, gloves, head, s_store))
-		. += I.slowdown
+		. += I.get_slowdown()
 
 	// Hands are also included, to make the 'take off your armor instantly and carry it with you to go faster' trick no longer viable.
 	// This is done seperately to disallow negative numbers (so you can't hold shoes in your hands to go faster).

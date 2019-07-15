@@ -12,6 +12,11 @@
 	recoil = 1
 	projectile_type = /obj/item/projectile/bullet/pistol/strong	//Only used for chameleon guns
 
+	required_skills = list(
+		SKILL_GUNS = SKILL_LEVEL_ONE,
+		SKILL_BGUNS = SKILL_LEVEL_ONE
+		)
+
 	var/caliber = ".357"		//determines which casings will fit
 	var/handle_casings = EJECT_CASINGS	//determines how spent casings should be handled
 	var/load_method = SINGLE_CASING|SPEEDLOADER //1 = Single shells, 2 = box or quick loader, 3 = magazine
@@ -103,7 +108,17 @@
 //Attempts to load A into src, depending on the type of thing being loaded and the load_method
 //Maybe this should be broken up into separate procs for each load method?
 /obj/item/weapon/gun/projectile/proc/load_ammo(var/obj/item/A, mob/user)
-	if(istype(A, /obj/item/ammo_magazine))
+	var/mob/living/L = user
+
+	var/load_delay = 6 SECONDS
+
+	if(L.skill_check(SKILL_GUNS,SKILL_LEVEL_ONE))
+		load_delay = 2.5 SECONDS
+
+	if(L.skill_check(SKILL_GUNS, SKILL_LEVEL_TWO)) // Near-instant.
+		load_delay = 1
+
+	if(istype(A, /obj/item/ammo_magazine) && do_after(user, load_delay, src))
 		var/obj/item/ammo_magazine/AM = A
 		if(!(load_method & AM.mag_type) || caliber != AM.caliber || allowed_magazines && !is_type_in_list(A, allowed_magazines))
 			user << "<span class='warning'>[AM] won't load into [src]!</span>"
@@ -111,8 +126,14 @@
 		switch(AM.mag_type)
 			if(MAGAZINE)
 				if(ammo_magazine)
-					user << "<span class='warning'>[src] already has a magazine loaded.</span>" //already a magazine here
-					return
+					if(!L.skill_check(SKILL_GUNS, SKILL_LEVEL_THREE))
+						to_chat(user, "<span class='warning'>[src] already has a magazine loaded.</span>") //already a magazine here, and we're not tactical enough.
+						return
+					else
+						unload_ammo(user, 1)
+						if(ammo_magazine)
+							to_chat(user, "<span class='warning'>You fail to rapidly reload \the [src].</span>")
+							return
 				user.remove_from_mob(AM)
 				AM.loc = src
 				ammo_magazine = AM
@@ -135,7 +156,7 @@
 					user.visible_message("[user] reloads [src].", "<span class='notice'>You load [count] round\s into [src].</span>")
 					playsound(src.loc, 'sound/weapons/empty.ogg', 50, 1)
 		AM.update_icon()
-	else if(istype(A, /obj/item/ammo_casing))
+	else if(istype(A, /obj/item/ammo_casing) && do_after(user, load_delay, src))
 		var/obj/item/ammo_casing/C = A
 		if(!(load_method & SINGLE_CASING) || caliber != C.caliber)
 			return //incompatible
@@ -155,8 +176,9 @@
 			return //incompatible
 
 		user << "<span class='notice'>You start loading \the [src].</span>"
-		sleep(1 SECOND)
+		do_after(user, load_delay + 2 SECONDS, src)
 		for(var/obj/item/ammo_casing/ammo in storage.contents)
+			do_after(user, load_delay + 1 SECOND, src)
 			if(caliber != ammo.caliber)
 				continue
 
@@ -165,7 +187,6 @@
 			if(loaded.len >= max_shells)
 				user << "<span class='warning'>[src] is full.</span>"
 				break
-			sleep(1 SECOND)
 
 	update_icon()
 

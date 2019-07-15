@@ -74,7 +74,7 @@
 	if(affecting)
 		if(affecting.buckled)
 			return null
-		if(state >= GRAB_AGGRESSIVE)
+		if(state >= GRAB_AGGRESSIVE || assailant.skill_check(SKILL_UNARMED, SKILL_LEVEL_THREE))
 			animate(affecting, pixel_x = initial(affecting.pixel_x), pixel_y = initial(affecting.pixel_y), 4, 1)
 			return affecting
 
@@ -233,7 +233,7 @@
 		return
 	if(!assailant.canClick())
 		return
-	if(world.time < (last_action + UPGRADE_COOLDOWN))
+	if(world.time < (last_action + get_upgrade_cooldown()))
 		return
 	if(!assailant.canmove || assailant.lying)
 		qdel(src)
@@ -280,6 +280,11 @@
 		affecting.set_dir(WEST)
 	adjust_position()
 
+// This is used to get the upgrade / action cooldown on grabs.
+/obj/item/weapon/grab/proc/get_upgrade_cooldown()
+	var/skill_level = assailant.get_skill_level(SKILL_UNARMED) - 1
+	return (UPGRADE_COOLDOWN + 10 - 5 * skill_level)
+
 //This is used to make sure the victim hasn't managed to yackety sax away before using the grab.
 /obj/item/weapon/grab/proc/confirm()
 	if(!assailant || !affecting)
@@ -322,18 +327,20 @@
 						inspect_organ(affecting, assailant, hit_zone)
 
 				if(I_GRAB)
-					jointlock(affecting, assailant, hit_zone)
+					if(assailant.skill_check(SKILL_UNARMED, SKILL_LEVEL_ONE))
+						jointlock(affecting, assailant, hit_zone)
 
 				if(I_HURT)
 					if(hit_zone == O_EYES)
 						attack_eye(affecting, assailant)
 					else if(hit_zone == BP_HEAD)
 						headbutt(affecting, assailant)
-					else
+					else if(assailant.skill_check(SKILL_UNARMED, SKILL_LEVEL_ONE))
 						dislocate(affecting, assailant, hit_zone)
 
 				if(I_DISARM)
-					pin_down(affecting, assailant)
+					if(assailant.skill_check(SKILL_UNARMED, SKILL_LEVEL_TWO) || prob(20))
+						pin_down(affecting, assailant)
 
 	//clicking on yourself while grabbing them
 	if(M == assailant && state >= GRAB_AGGRESSIVE)
@@ -372,13 +379,12 @@
 				break_strength++
 			break_chance_table = list(3, 18, 45, 100)
 
-
 		if(GRAB_KILL)
 			grab_name = "stranglehold"
 			break_chance_table = list(5, 20, 40, 80, 100)
 
-	//It's easier to break out of a grab by a smaller mob
-	break_strength += max(size_difference(affecting, assailant), 0)
+	//It's easier to break out of a grab by a smaller mob, or a grab held by someone of less skill in unarmed combat. If you're better, their strength is decreased, but not diminished.
+	break_strength += max(size_difference(affecting, assailant) + affecting.get_skill_difference(SKILL_UNARMED, assailant), 0)
 
 	var/break_chance = break_chance_table[CLAMP(break_strength, 1, break_chance_table.len)]
 	if(prob(break_chance))

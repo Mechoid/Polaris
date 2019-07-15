@@ -277,7 +277,8 @@ emp_act
 
 		//set the dislocate mult less than the effective force mult so that
 		//dislocating limbs on disarm is a bit easier than breaking limbs on harm
-		attack_joint(affecting, I, effective_force, 0.75, blocked, soaked) //...but can dislocate joints
+		if(user.skill_check(SKILL_MELEE, SKILL_LEVEL_TWO))
+			attack_joint(affecting, I, effective_force, 0.75, blocked, soaked) //...but can dislocate joints
 	else if(!..())
 		return 0
 
@@ -306,7 +307,7 @@ emp_act
 		if(!stat)
 			switch(hit_zone)
 				if("head")//Harder to score a stun but if you do it lasts a bit longer
-					if(prob(effective_force))
+					if(prob(max(0, effective_force - 10 + 5 * user.get_skill_difference(SKILL_MELEE, src))))
 						apply_effect(20, PARALYZE, blocked, soaked)
 						visible_message("<span class='danger'>\The [src] has been knocked unconscious!</span>")
 					if(bloody)//Apply blood
@@ -320,7 +321,7 @@ emp_act
 							glasses.add_blood(src)
 							update_inv_glasses(0)
 				if("chest")//Easier to score a stun but lasts less time
-					if(prob(effective_force + 10))
+					if(prob(max(0, effective_force + 5 * user.get_skill_difference(SKILL_MELEE, src))))
 						apply_effect(6, WEAKEN, blocked, soaked)
 						visible_message("<span class='danger'>\The [src] has been knocked down!</span>")
 					if(bloody)

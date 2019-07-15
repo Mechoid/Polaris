@@ -17,6 +17,10 @@
 	max_special_equip = 1
 	cargo_capacity = 1
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_TWO
+		)
+
 /*
 /obj/mecha/combat/range_action(target as obj|mob|turf)
 	if(internal_damage&MECHA_INT_CONTROL_LOST)

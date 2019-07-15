@@ -41,6 +41,11 @@
 	max_universal_equip = 1
 	max_special_equip = 1
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_TWO,
+		SKILL_EVA = SKILL_LEVEL_TWO
+		)
+
 /obj/mecha/working/hoverpod/Initialize()
 	..()
 	ion_trail.stop()

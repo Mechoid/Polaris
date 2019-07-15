@@ -1490,6 +1490,12 @@
 	set category = "IC"
 
 	if(stat) return
+
+	if(!skill_check(SKILL_UNARMED, SKILL_LEVEL_ONE))
+		pulling_punches = FALSE
+		to_chat(src, "<span class='notice'>You aren't certain how to restrain your attacks..</span>")
+		return
+
 	pulling_punches = !pulling_punches
 	src << "<span class='notice'>You are now [pulling_punches ? "pulling your punches" : "not pulling your punches"].</span>"
 	return

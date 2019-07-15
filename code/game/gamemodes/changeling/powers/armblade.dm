@@ -111,11 +111,17 @@
 				qdel(src)
 
 /obj/item/weapon/melee/changeling/handle_shield(mob/user, var/damage, atom/damage_source = null, mob/attacker = null, var/def_zone = null, var/attack_text = "the attack")
-	if(default_parry_check(user, attacker, damage_source) && prob(defend_chance))
+	var/mob/living/L = user
+	var/defensemod = 0.9
+
+	if(L.skill_check(SKILL_MELEE, SKILL_LEVEL_TWO))
+		defensemod = 1.1
+
+	if(default_parry_check(user, attacker, damage_source) && prob(defend_chance * defensemod - 3))
 		user.visible_message("<span class='danger'>\The [user] parries [attack_text] with \the [src]!</span>")
 		playsound(user.loc, 'sound/weapons/slash.ogg', 50, 1)
 		return 1
-	if(unique_parry_check(user, attacker, damage_source) && prob(projectile_parry_chance))
+	if(unique_parry_check(user, attacker, damage_source) && prob(projectile_parry_chance * defensemod - 3))
 		user.visible_message("<span class='danger'>\The [user] deflects [attack_text] with \the [src]!</span>")
 		playsound(user.loc, 'sound/weapons/slash.ogg', 50, 1)
 		return 1

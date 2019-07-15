@@ -6,42 +6,48 @@
 	name = "Technical"
 	category_item_type = /datum/category_item/skill/technical
 
-/datum/category_item/skill/technical/exosuits
-	id = SKILL_EXOSUITS
-	name = "Exosuit Operation"
-	flavor_desc = "How well your character is able to pilot various kinds of exosuits."
-	govern_desc = "Governs the ability to use exosuits on a general level. The various tools attached may demand \
-	additional skills beyond this one."
-	typical_desc = "A low level is typical of various professions with access to exosuits, such as miners, engineers, \
-	and EMT personnel. A high level is typical of private security, police, or military specialists."
+/datum/category_item/skill/technical/infotech
+	id = SKILL_INFOTECH
+	name = "Information Technology"
+	flavor_desc = "How well your character is able to understand advanced information technology."
+	govern_desc = "Governs the ability to interact with machines, typically of the more advanced variety."
+	typical_desc = "A low level is typical of individuals with engineering backgrounds, such as engineers, \
+	or mechatronic engineers. A high level is typical of individuals working with cutting edge technology, or \
+	artificial intelligences, such as roboticists or chief engineers."
 	levels = list(
-		/datum/skill_level/exosuits/zero,
-		/datum/skill_level/exosuits/one,
-		/datum/skill_level/exosuits/two,
-		/datum/skill_level/exosuits/three
+		/datum/skill_level/infotech/zero,
+		/datum/skill_level/infotech/one,
+		/datum/skill_level/infotech/two,
+		/datum/skill_level/infotech/three
 		)
 
-/datum/skill_level/exosuits/zero
+/datum/skill_level/infotech/zero
 	name = "Untrained"
-	flavor_desc = "You are unfamiliar with exosuit controls, and if you attempt to use them you are liable to make mistakes."
-	mechanics_desc = "Input is often scrambled when using any exosuit."
+	flavor_desc = "You are unfamiliar with more advanced aspects of modern electronics, let alone the workings of anything more sophisticated than a smartfridge."
+	mechanics_desc = "You are unable to utilize many machines pertaining to A.I.<br>\
+	You cannot modify AI or Cyborg laws."
 
-/datum/skill_level/exosuits/one
-	name = "TODO 1"
-	flavor_desc = "You have been trained in exosuit operation and safety for common civilian exosuits."
-	mechanics_desc = "Can use ‘civilian’ exosuits like the Ripley or the Odysseus without penalties."
+/datum/skill_level/infotech/one
+	name = "Technician"
+	flavor_desc = "You have been trained in the use of modern data storage and processing systems, but still struggle with the true complexities of A.I."
+	mechanics_desc = "Can use Reset AI boards.<br>\
+	Can download techlevels onto disks.<br>\
+	Can download genetic sequences onto disks.<br>\
+	Can install Cyborg radio keys, or reset modules.<br>\
+	Can construct integrated circuits, and use the printer."
 	cost = 10
 
-/datum/skill_level/exosuits/two
-	name = "TODO 2"
-	flavor_desc = "You’ve worked with exosuits extensively, and you know how to safely use the more complicated exosuits intended for combat operations."
-	mechanics_desc = "Can additionally use the ‘combat’ exosuits like the Durand or the Gygax without penalties."
-	cost = 30
+/datum/skill_level/infotech/two
+	name = "Chief Technician"
+	flavor_desc = "You’ve worked with computers extensively, and you know how to safely utilize or modify common drone systems."
+	mechanics_desc = "Can delete specific data from the R&D servers.<br>\
+	Can modify AI and Cyborg lawsets.<br>\
+	"
+	cost = 20
 
-/datum/skill_level/exosuits/three
-	name = "TODO 3"
-	flavor_desc = "Your exosuits’ cockpit is like a second home to you. You know how to get the most out of controlling a huge machine surrounding you."
-	mechanics_desc = null
+/datum/skill_level/infotech/three
+	name = "A.I. Developer"
+	flavor_desc = "Your knowledge of complex computers and data storage is"
+	mechanics_desc = "Some exosuit tools will have unique abilities enabled when you are operating them."
 	enhancing = TRUE
-	cost = 60
-
+	cost = 40

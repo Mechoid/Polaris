@@ -21,6 +21,8 @@
 	var/show_examine = TRUE	// Does this pop up on a mob when the mob is examined?
 	var/register_as_dangerous_object = FALSE // Should this tell its turf that it is dangerous automatically?
 
+	var/list/required_skills = null // Should be an assoc list for skill checks, first index should be the 'primary' one.
+
 /obj/Initialize()
 	if(register_as_dangerous_object)
 		register_dangerous_to_step()

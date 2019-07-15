@@ -155,6 +155,21 @@
 	user.do_attack_animation(M)
 
 	if(!clown_check(user))	return
+
+	var/effectiveness_mod = 1
+	if(!user.skill_check(SKILL_MELEE, SKILL_LEVEL_ONE))
+		if(prob(20))
+			to_chat(user, "<span class='warning'>You fumble \the [src]'s switches.</span>")
+			attack_self(user)
+			return
+		else if(prob(1))
+			to_chat(user, "<span class='warning'>You accidentally overload the bulb!</span>")
+			broken = TRUE
+			update_icon()
+			return
+		else
+			effectiveness_mod = 0.8
+
 	if(broken)
 		to_chat(user, "<span class='warning'>\The [src] is broken.</span>")
 		return
@@ -176,6 +191,7 @@
 				if(ishuman(C))
 					var/mob/living/carbon/human/H = C
 					flash_strength *= H.species.flash_mod
+					flash_strength *= effectiveness_mod
 
 					if(flash_strength > 0)
 						H.Confuse(flash_strength + 5)
@@ -221,7 +237,7 @@
 		else
 
 			user.visible_message("<span class='notice'>[user] overloads [M]'s sensors with the flash!</span>")
-			M.Weaken(rand(5,10))
+			M.Weaken(round(rand(5,10) * effectiveness_mod))
 	else
 
 		user.visible_message("<span class='notice'>[user] fails to blind [M] with the flash!</span>")

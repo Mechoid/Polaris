@@ -2551,6 +2551,7 @@
 #include "code\modules\shuttles\shuttles_web.dm"
 #include "code\modules\shuttles\web_datums.dm"
 #include "code\modules\skills\skill_datums.dm"
+#include "code\modules\skills\skill_defines\combat.dm"
 #include "code\modules\skills\skill_defines\general.dm"
 #include "code\modules\skills\skill_defines\technical.dm"
 #include "code\modules\skills\skill_defines\testing.dm"

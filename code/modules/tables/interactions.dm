@@ -107,7 +107,7 @@
 				else
 					user << "<span class='danger'>You need a better grip to do that!</span>"
 					return
-			else if(G.state > GRAB_AGGRESSIVE || world.time >= (G.last_action + UPGRADE_COOLDOWN))
+			else if(G.state > GRAB_AGGRESSIVE || world.time >= (G.last_action + G.get_upgrade_cooldown()))
 				M.forceMove(get_turf(src))
 				M.Weaken(5)
 				visible_message("<span class='danger'>[G.assailant] puts [G.affecting] on \the [src].</span>")

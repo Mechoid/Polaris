@@ -67,6 +67,10 @@
 	var/obj/item/weapon/tank/tank = null              // Deployable tank, if any.
 	var/obj/item/device/suit_cooling_unit/cooler = null// Cooling unit, for FBPs.  Cannot be installed alongside a tank.
 
+	required_skills = list(
+		SKILL_EVA = SKILL_LEVEL_ONE
+		)
+
 /obj/item/clothing/suit/space/void/examine(user)
 	..(user)
 	var/list/part_list = new
@@ -92,6 +96,20 @@
 
 	if(H.wear_suit != src)
 		return
+
+	var/equip_delay = 10 SECONDS
+	if(usr != M)
+		var/mob/living/L = usr
+		if(L.check_all_skills(required_skills))
+			equip_delay = 1
+	else if(H.check_all_skills(required_skills))
+		equip_delay = 2 SECONDS
+
+	if(!do_after(H, equip_delay, src))
+		to_chat(H, "<span class='warning'>You fail to equip \the [src].</span>")
+		if(H.unEquip(src))
+			src.forceMove(get_turf(H))
+			return
 
 	if(boots)
 		if (H.equip_to_slot_if_possible(boots, slot_shoes))
@@ -147,6 +165,14 @@
 	if(cooler)
 		cooler.canremove = 1
 		cooler.forceMove(src)
+
+/obj/item/clothing/suit/space/void/get_slowdown() // Does the skillcheck shift for voidsuit encumberance.
+	. = ..()
+	if(ishuman(loc))
+		var/mob/living/carbon/human/H = loc
+		if(!H.skill_check(SKILL_EVA, SKILL_LEVEL_ONE) && . > 0)
+			. *= 1.5
+	return .
 
 /obj/item/clothing/suit/space/void/verb/toggle_helmet()
 
@@ -217,12 +243,18 @@
 
 	if(!istype(user,/mob/living)) return
 
+	var/mob/living/L = user
+
 	if(istype(W,/obj/item/clothing/accessory) || istype(W, /obj/item/weapon/hand_labeler))
 		return ..()
 
 	if(user.get_inventory_slot(src) == slot_wear_suit)
 		to_chat(user, "<span class='warning'>You cannot modify \the [src] while it is being worn.</span>")
 		return
+
+	if(!L.check_all_skills(required_skills))
+		to_chat(user, "<span class='warning'>You aren't certain you could modify this suit safely..</span>")
+		return ..()
 
 	if(W.is_screwdriver())
 		if(helmet || boots || tank)

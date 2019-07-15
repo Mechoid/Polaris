@@ -74,6 +74,10 @@
 	valid_accessory_slots = (ACCESSORY_SLOT_OVER | ACCESSORY_SLOT_ARMBAND | ACCESSORY_SLOT_DECOR)
 	var/list/supporting_limbs //If not-null, automatically splints breaks. Checked when removing the suit.
 
+	required_skills = list(
+		SKILL_EVA = SKILL_LEVEL_ZERO
+		)
+
 /obj/item/clothing/suit/space/equipped(mob/M)
 	check_limb_support(M)
 	..()
@@ -81,6 +85,14 @@
 /obj/item/clothing/suit/space/dropped(var/mob/user)
 	check_limb_support(user)
 	..()
+
+/obj/item/clothing/suit/space/get_slowdown() // Does the skillcheck shift for spacesuit encumberance.
+	. = slowdown
+	if(ishuman(loc))
+		var/mob/living/carbon/human/H = loc
+		if(H.skill_check(SKILL_EVA, SKILL_LEVEL_THREE) && . > 0)
+			. *= 0.8
+	return .
 
 // Some space suits are equipped with reactive membranes that support
 // broken limbs - at the time of writing, only the ninja suit, but

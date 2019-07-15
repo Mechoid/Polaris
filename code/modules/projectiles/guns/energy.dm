@@ -4,6 +4,11 @@
 	icon_state = "energy"
 	fire_sound_text = "laser blast"
 
+	required_skills = list(
+		SKILL_GUNS = SKILL_LEVEL_ONE,
+		SKILL_EGUNS = SKILL_LEVEL_ONE
+		)
+
 	var/obj/item/weapon/cell/power_supply //What type of power cell this uses
 	var/charge_cost = 240 //How much energy is needed to fire.
 
@@ -91,11 +96,21 @@
 			return
 		if(istype(C, accept_cell_type))
 			var/obj/item/weapon/cell/P = C
+
+			var/mob/living/L = user
+			var/delaymod = 1.5
+			if(L.skill_check(SKILL_GUNS, SKILL_LEVEL_THREE))
+				delaymod = 0.5
+			else if(L.skill_check(SKILL_GUNS, SKILL_LEVEL_TWO))
+				delaymod = 1
+			else if(L.skill_check(SKILL_GUNS, SKILL_LEVEL_ONE))
+				delaymod = 1.25
+
 			if(power_supply)
 				user << "<span class='notice'>[src] already has a power cell.</span>"
 			else
 				user.visible_message("[user] is reloading [src].", "<span class='notice'>You start to insert [P] into [src].</span>")
-				if(do_after(user, 5 * P.w_class))
+				if(do_after(user, 5 * P.w_class * delaymod))
 					user.remove_from_mob(P)
 					power_supply = P
 					P.loc = src

@@ -50,6 +50,12 @@
 	attack_verb = list("struck", "hit", "bashed")
 	zoomdevicename = "scope"
 
+	// First is the primary skill (Should be SKILL_GUNS), second is the specialization. I.E., SKILL_BALLISTIC or SKILL_ENERGY
+	required_skills = list(
+		SKILL_GUNS = SKILL_LEVEL_ONE,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
+
 	var/automatic = 0
 	var/burst = 1
 	var/fire_delay = 6 	//delay after shooting before the gun can be used again
@@ -593,7 +599,7 @@
 	P.accuracy -= user.get_accuracy_penalty()
 
 	//accuracy bonus from aiming
-	if (aim_targets && (target in aim_targets))
+	if (aim_targets && (target in aim_targets) && user.check_all_skills(required_skills))
 		//If you aim at someone beforehead, it'll hit more often.
 		//Kinda balanced by fact you need like 2 seconds to aim
 		//As opposed to no-delay pew pew
@@ -605,6 +611,20 @@
 			P.accuracy += M.accuracy
 		if(!isnull(M.accuracy_dispersion))
 			P.dispersion = max(P.dispersion + M.accuracy_dispersion, 0)
+
+	if(one_handed_penalty && !user.skill_check(SKILL_GUNS, SKILL_LEVEL_ONE)) // Untrained persons trying to use heavy weapons will suffer accuracy penalties.
+		P.accuracy *= 0.9
+		P.dispersion *= 1.1
+
+	if(!user.skill_check(required_skills[2], SKILL_LEVEL_TWO)) // Specialization skill, energy or ballistic.
+		for(var/cycle = 1 to burst)
+			P.accuracy -= (cycle - 1) * 5
+			P.dispersion *= 1.1
+
+	if(user.skill_check(required_skills[1], SKILL_LEVEL_THREE))
+		P.accuracy += 10
+		P.accuracy *= 1.1
+		P.dispersion *= 0.9
 
 //does the actual launching of the projectile
 /obj/item/weapon/gun/proc/process_projectile(obj/projectile, mob/user, atom/target, var/target_zone, var/params=null)

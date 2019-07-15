@@ -12,6 +12,11 @@
 	var/auto_rearm = 0 //Does the weapon reload itself after each shot?
 	required_type = list(/obj/mecha/combat, /obj/mecha/working/hoverpod/combatpod)
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
+
 	equip_type = EQUIP_WEAPON
 
 /obj/item/mecha_parts/mecha_equipment/weapon/action_checks(atom/target)
@@ -22,6 +27,7 @@
 /obj/item/mecha_parts/mecha_equipment/weapon/action(atom/target, params)
 	if(!action_checks(target))
 		return
+
 	var/turf/curloc = chassis.loc
 	var/turf/targloc = get_turf(target)
 	if(!curloc || !targloc)
@@ -95,6 +101,11 @@
 	name = "general energy weapon"
 	auto_rearm = 1
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_TWO,
+		SKILL_GUNS = SKILL_LEVEL_TWO
+		)
+
 /obj/item/mecha_parts/mecha_equipment/weapon/energy/laser
 	equip_cooldown = 8
 	name = "\improper CH-PS \"Immolator\" laser"
@@ -124,6 +135,11 @@
 	energy_drain = 175
 	icon_state = "mecha_xray-rig"
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
+
 	equip_type = EQUIP_UTILITY
 
 /obj/item/mecha_parts/mecha_equipment/weapon/energy/riggedlaser
@@ -135,6 +151,11 @@
 	projectile = /obj/item/projectile/beam
 	fire_sound = 'sound/weapons/Laser.ogg'
 	required_type = list(/obj/mecha/combat, /obj/mecha/working)
+
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
 
 	equip_type = EQUIP_UTILITY
 
@@ -160,6 +181,11 @@
 	projectile = /obj/item/projectile/beam/heavylaser/fakeemitter
 	fire_sound = 'sound/weapons/emitter.ogg'
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
+
 	equip_type = EQUIP_UTILITY
 
 	origin_tech = list(TECH_COMBAT = 4, TECH_MAGNET = 4, TECH_PHORON = 3, TECH_ILLEGAL = 1)
@@ -173,6 +199,11 @@
 	energy_drain = 25
 	projectile = /obj/item/projectile/energy/phase/heavy
 	fire_sound = 'sound/weapons/Taser.ogg'
+
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
 
 	equip_type = EQUIP_UTILITY
 
@@ -197,6 +228,11 @@
 	energy_drain = 100
 	projectile = /obj/item/projectile/ion/pistol
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_TWO,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
+
 	equip_type = EQUIP_UTILITY
 
 /obj/item/mecha_parts/mecha_equipment/weapon/energy/pulse
@@ -208,6 +244,11 @@
 	origin_tech = list(TECH_MATERIAL = 3, TECH_COMBAT = 6, TECH_POWER = 4)
 	projectile = /obj/item/projectile/beam/pulse/heavy
 	fire_sound = 'sound/weapons/gauss_shoot.ogg'
+
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_TWO,
+		SKILL_GUNS = SKILL_LEVEL_THREE
+		)
 
 /obj/item/projectile/beam/pulse/heavy
 	name = "heavy pulse laser"
@@ -230,12 +271,22 @@
 	projectile = /obj/item/projectile/beam/stun
 	fire_sound = 'sound/weapons/Taser.ogg'
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE,
+		SKILL_GUNS = SKILL_LEVEL_TWO
+		)
+
 /obj/item/mecha_parts/mecha_equipment/weapon/energy/taser/rigged
 	name = "jury-rigged static rifle"
 	desc = "A vaguely functional taser analog, inside an extinguisher casing."
 	icon_state = "mecha_taser-rig"
 	energy_drain = 30
 	projectile = /obj/item/projectile/beam/stun/weak
+
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
 
 	equip_type = EQUIP_UTILITY
 
@@ -280,6 +331,11 @@
 /obj/item/mecha_parts/mecha_equipment/weapon/ballistic
 	name = "general ballisic weapon"
 	var/projectile_energy_cost
+
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_TWO,
+		SKILL_GUNS = SKILL_LEVEL_TWO
+		)
 
 /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/get_equip_info()
 	return "[..()]\[[src.projectiles]\][(src.projectiles < initial(src.projectiles))?" - <a href='?src=\ref[src];rearm=1'>Rearm</a>":null]"
@@ -348,6 +404,11 @@
 	projectiles = 20
 	deviation = 1
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_TWO,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
+
 	equip_type = EQUIP_UTILITY
 
 /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/lmg
@@ -371,6 +432,11 @@
 	projectile = /obj/item/projectile/bullet/pistol
 	deviation = 0.5
 
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_TWO,
+		SKILL_GUNS = SKILL_LEVEL_ONE
+		)
+
 	equip_type = EQUIP_UTILITY
 
 /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/missile_rack
@@ -393,6 +459,10 @@
 	missile_speed = 1
 	missile_range = 15
 	required_type = /obj/mecha  //Why restrict it to just mining or combat mechs?
+
+	required_skills = list(
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE
+		)
 
 	equip_type = EQUIP_UTILITY
 
