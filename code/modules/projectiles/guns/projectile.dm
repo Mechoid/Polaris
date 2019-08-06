@@ -13,8 +13,7 @@
 	projectile_type = /obj/item/projectile/bullet/pistol/strong	//Only used for chameleon guns
 
 	required_skills = list(
-		SKILL_GUNS = SKILL_LEVEL_ONE,
-		SKILL_BGUNS = SKILL_LEVEL_ONE
+		SKILL_GUNS = SKILL_LEVEL_ONE
 		)
 
 	var/caliber = ".357"		//determines which casings will fit

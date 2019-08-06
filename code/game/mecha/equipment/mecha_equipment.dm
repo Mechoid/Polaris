@@ -123,8 +123,8 @@
 	if(!equip_ready)
 		return 0
 	var/mob/living/L = chassis.occupant
-	if(!istype(L) && !L.check_all_skills(required_skills))
-		occupant_message("<span class='warning'>You can't seem to get \the [src] to operate.</span>")
+	if(!istype(L) && !L.skill_check(required_skills[1], required_skills[required_skills[1]]) && prob(40))
+		occupant_message("<span class='warning'>\The [src] doesn't respond!</span>")
 		return 0
 	if(energy_drain && !chassis.has_charge(energy_drain))
 		return 0

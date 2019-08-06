@@ -32,14 +32,14 @@
 // Technology used heavily in conjunction or integrated with organics.
 #define SKILL_BIOTECH		"Biomechanics"
 
-// Technology primarily focused on constructing and modifying heavy machinery, or robotics.
+// Technology primarily focused on constructing and modifying heavy machinery.
 #define SKILL_MECHTECH		"Mechatronics"
 
 // Technology primarily focused on materials, their strengths, and applications.
 #define SKILL_MATTECH		"Material Engineering"
 
 // Technology used in xenoarchaeology.
-#define SKILL_XENOTECH		"Ancient Tech"
+#define SKILL_XENOTECH		"Archaeological Tech"
 
 /*
  * General Skills.
@@ -53,6 +53,15 @@
 
 // Piloting multi-person space-craft.
 #define SKILL_PILOT			"Spacecraft"
+
+// General physical fitness.
+#define SKILL_PHYSIQUE		"Physique"
+
+// General ability to tend plants.
+#define SKILL_BOTANY		"Botany"
+
+// General ability to cook, or mix drinks.
+#define SKILL_KITCHEN		"Kitchen"
 
 /*
  * Crafting Skills
@@ -77,14 +86,11 @@
 // Ability to perform surgery on meat.
 #define SKILL_SURGERY		"Surgery"
 
-// "First Aid" Ability to keep someone stable, splints, bandages, etc.
-#define SKILL_RESPONSE		"Response Aid"
-
-// Handling of corpses, autopsies, cloning.
-#define SKILL_POSTMORT		"Postmortem Operations"
-
 // General medical practice, syringe usage on living persons, uses for stethoscopes, etc.
 #define SKILL_MEDPRACTICE	"Medical Practice"
+
+// Genetics machinery, understanding of general building blocks of life.
+#define SKILL_GENETICS		"Genetics"
 
 /*
  * Combat Skills.
@@ -92,8 +98,6 @@
 
 // Guns and ability to use them. [DONE]
 #define SKILL_GUNS			"Gun Combat"
-#define SKILL_EGUNS			"Energy Guns"
-#define SKILL_BGUNS			"Ballistic Guns"
 
 // Melee combat, armed specifically. [DONE]
 #define SKILL_MELEE			"Melee Combat"

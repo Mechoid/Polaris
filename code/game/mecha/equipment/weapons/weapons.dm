@@ -90,6 +90,9 @@
 
 	P.accuracy -= user.get_accuracy_penalty()
 
+	P.accuracy -= 10 * !(user.skill_check(required_skills[2], required_skills[required_skills[2]]))
+	P.dispersion = max(P.dispersion + 0.5 * !(user.skill_check(required_skills[2], required_skills[required_skills[2]])), 0)
+
 	// Some modifiers make it harder or easier to hit things.
 	for(var/datum/modifier/M in user.modifiers)
 		if(!isnull(M.accuracy))
@@ -461,7 +464,8 @@
 	required_type = /obj/mecha  //Why restrict it to just mining or combat mechs?
 
 	required_skills = list(
-		SKILL_EXOSUITS = SKILL_LEVEL_ONE
+		SKILL_EXOSUITS = SKILL_LEVEL_ONE,
+		SKILL_GUNS = SKILL_LEVEL_ZERO
 		)
 
 	equip_type = EQUIP_UTILITY

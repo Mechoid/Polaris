@@ -50,9 +50,7 @@
 	attack_verb = list("struck", "hit", "bashed")
 	zoomdevicename = "scope"
 
-	// First is the primary skill (Should be SKILL_GUNS), second is the specialization. I.E., SKILL_BALLISTIC or SKILL_ENERGY
 	required_skills = list(
-		SKILL_GUNS = SKILL_LEVEL_ONE,
 		SKILL_GUNS = SKILL_LEVEL_ONE
 		)
 
@@ -616,12 +614,12 @@
 		P.accuracy *= 0.9
 		P.dispersion *= 1.1
 
-	if(!user.skill_check(required_skills[2], SKILL_LEVEL_TWO)) // Specialization skill, energy or ballistic.
+	if(!user.skill_check(SKILL_GUNS, SKILL_LEVEL_TWO)) // Specialization skill, energy or ballistic.
 		for(var/cycle = 1 to burst)
 			P.accuracy -= (cycle - 1) * 5
 			P.dispersion *= 1.1
 
-	if(user.skill_check(required_skills[1], SKILL_LEVEL_THREE))
+	if(user.skill_check(SKILL_GUNS, SKILL_LEVEL_THREE))
 		P.accuracy += 10
 		P.accuracy *= 1.1
 		P.dispersion *= 0.9

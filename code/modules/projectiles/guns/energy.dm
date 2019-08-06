@@ -5,8 +5,7 @@
 	fire_sound_text = "laser blast"
 
 	required_skills = list(
-		SKILL_GUNS = SKILL_LEVEL_ONE,
-		SKILL_EGUNS = SKILL_LEVEL_ONE
+		SKILL_GUNS = SKILL_LEVEL_ONE
 		)
 
 	var/obj/item/weapon/cell/power_supply //What type of power cell this uses
