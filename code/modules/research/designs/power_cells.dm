@@ -70,3 +70,12 @@
 	build_path = /obj/item/weapon/cell/device/weapon
 	category = "Misc"
 	sort_string = "BAABB"
+
+/datum/design/item/powercell/supermat
+	name = "supermatter"
+	build_type = PROTOLATHE
+	id = "supermat_cell"
+	materials = list(MAT_PLASTEEL = 2000, MAT_VERDANTIUM = 500, MAT_SUPERMATTER = 1000)
+	build_path = /obj/item/weapon/cell/device/weapon/recharge/supermatter
+	category = "Misc"
+	sort_string = "BAABC"

@@ -138,6 +138,7 @@
 	if(maxcharge < amount)	return 0
 	var/amount_used = min(maxcharge-charge,amount)
 	charge += amount_used
+	charge = CLAMP(charge, 0, maxcharge)
 	update_icon()
 	if(loc)
 		loc.update_icon()

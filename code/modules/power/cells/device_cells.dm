@@ -37,6 +37,14 @@
 	charge_amount = 160	//Recharges a lot more quickly...
 	charge_delay = 100	//... but it takes a while to get started
 
+/obj/item/weapon/cell/device/weapon/recharge/supermatter
+	name = "supermatter device power cell"
+	desc = "A small power cell designed to power small devices. This one recharges itself utilizing a small piece of supermatter."
+	icon_state = "smcell"
+	maxcharge = 600
+	charge_amount = 240
+	charge_delay = 1 SECOND
+	origin_tech = list(TECH_POWER = 7, TECH_ENGINEERING = 6, TECH_PHORON = 3)
 
 /datum/category_item/catalogue/anomalous/precursor_a/alien_void_cell
 	name = "Precursor Alpha Object - Void Cell"
