@@ -30,12 +30,25 @@
  *
  * */
 
+GLOBAL_LIST_EMPTY(global_recipe_list)
+
+/hook/startup/proc/setup_recipes()
+	for(var/datum/recipe/R in subtypesof(/datum/recipe))
+		global_recipe_list |= new R
+
 /datum/recipe
 	var/list/reagents // example: = list("berryjuice" = 5) // do not list same reagent twice
 	var/list/items    // example: = list(/obj/item/weapon/tool/crowbar, /obj/item/weapon/welder) // place /foo/bar before /foo
 	var/list/fruit    // example: = list("fruit" = 3)
+	var/list/materials// example: = list(/obj/item/stack = 2)
 	var/result        // example: = /obj/item/weapon/reagent_containers/food/snacks/donut/normal
 	var/time = 100    // 1/10 part of second
+	var/obj/required_station // The location (contents list) required for this recipe to be made. Specialist recipes (Kitchen Microwave) will self-sort these as subtypes.
+
+/datum/recipe/proc/check_station(var/target)
+	if(istype(target, required_station))
+		return 1
+	return 0
 
 /datum/recipe/proc/check_reagents(var/datum/reagents/avail_reagents)
 	. = 1
@@ -69,7 +82,7 @@
 					break
 	return .
 
-/datum/recipe/proc/check_items(var/obj/container as obj)
+/datum/recipe/proc/check_items(var/atom/container)
 	. = 1
 	if (items && items.len)
 		var/list/checklist = list()
@@ -86,6 +99,9 @@
 						checklist.Cut(i, i+1)
 						found = 1
 						break
+
+					if(istype(O
+
 				if (!found)
 					. = 0
 		else
@@ -159,7 +175,7 @@
 		var/highest_count = 0
 		. = possible_recipes[1]
 		for (var/datum/recipe/recipe in possible_recipes)
-			var/count = ((recipe.items)?(recipe.items.len):0) + ((recipe.reagents)?(recipe.reagents.len):0) + ((recipe.fruit)?(recipe.fruit.len):0)
+			var/count = ((recipe.items)?(recipe.items.len):0) + ((recipe.reagents)?(recipe.reagents.len):0) + ((recipe.fruit)?(recipe.fruit.len):0) + ((recipe.materials)?(recipe.materials.len):0)
 			if (count >= highest_count)
 				highest_count = count
 				. = recipe
