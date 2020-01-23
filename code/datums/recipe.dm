@@ -34,7 +34,7 @@ GLOBAL_LIST_EMPTY(global_recipe_list)
 
 /hook/startup/proc/setup_recipes()
 	for(var/datum/recipe/R in subtypesof(/datum/recipe))
-		global_recipe_list |= new R
+		GLOB.global_recipe_list |= new R
 
 /datum/recipe
 	var/list/reagents // example: = list("berryjuice" = 5) // do not list same reagent twice
@@ -46,9 +46,31 @@ GLOBAL_LIST_EMPTY(global_recipe_list)
 	var/obj/required_station // The location (contents list) required for this recipe to be made. Specialist recipes (Kitchen Microwave) will self-sort these as subtypes.
 
 /datum/recipe/proc/check_station(var/target)
-	if(istype(target, required_station))
+	if(!required_station || istype(target, required_station))
 		return 1
 	return 0
+
+/datum/recipe/proc/check_materials(var/atom/container)
+	. = 0
+
+	if(!materials || !materials.len)
+		. = 1
+
+	var/available_materials = 0
+	for(var/stack_type in materials)
+		world << "[stack_type]"
+		for(var/obj/item/stack/Stack in container)
+			world << "[Stack]"
+			if(istype(Stack, stack_type) && Stack.can_use(materials[stack_type]))
+				world << "[Stack] is our [stack_type]!"
+				available_materials += 1
+				break
+
+	if(available_materials >= materials.len)
+		world << "[available_materials] is greater than [materials.len]"
+		. = 1
+
+	return .
 
 /datum/recipe/proc/check_reagents(var/datum/reagents/avail_reagents)
 	. = 1
@@ -99,8 +121,6 @@ GLOBAL_LIST_EMPTY(global_recipe_list)
 						checklist.Cut(i, i+1)
 						found = 1
 						break
-
-					if(istype(O
 
 				if (!found)
 					. = 0
@@ -160,11 +180,46 @@ GLOBAL_LIST_EMPTY(global_recipe_list)
 	container.reagents.clear_reagents()
 	return result_obj
 
-/proc/select_recipe(var/list/datum/recipe/avaiable_recipes, var/obj/obj as obj, var/exact)
+//crafting version
+/datum/recipe/proc/craft(var/atom/container as obj)
+	var/obj/result_obj = new result(container)
+	if(istype(container, /obj/machinery))
+		var/obj/machinery/machine = container
+		for(var/path in items)
+			for(var/obj/O in ((machine.contents-result_obj - machine.component_parts) - machine.circuit))
+				if(istype(O, path))
+					O.reagents.trans_to_obj(result_obj, O.reagents.total_volume)
+					qdel(O)
+					break
+
+		for(var/stack_type in materials)
+			for(var/obj/item/stack/Stack in container)
+				if(istype(Stack, stack_type))
+					Stack.use(materials[stack_type])
+					break
+
+	else
+		for(var/path in items)
+			for(var/obj/O in container)
+				if(istype(O, path))
+					O.reagents.trans_to_obj(result_obj, O.reagents.total_volume)
+					qdel(O)
+					break
+
+		for(var/stack_type in materials)
+			for(var/obj/item/stack/Stack in container)
+				if(istype(Stack, stack_type))
+					Stack.use(materials[stack_type])
+					break
+
+	container.reagents.clear_reagents()
+	return result_obj
+
+/proc/select_recipe(var/list/datum/recipe/available_recipes, var/obj/obj as obj, var/exact)
 	var/list/datum/recipe/possible_recipes = new
 	var/target = exact ? 0 : 1
-	for (var/datum/recipe/recipe in avaiable_recipes)
-		if((recipe.check_reagents(obj.reagents) < target) || (recipe.check_items(obj) < target) || (recipe.check_fruit(obj) < target))
+	for (var/datum/recipe/recipe in available_recipes)
+		if((recipe.check_reagents(obj.reagents) < target) || (recipe.check_items(obj) < target) || (recipe.check_fruit(obj) < target) || (recipe.check_station(obj) < target) || (recipe.check_materials(obj) < target))
 			continue
 		possible_recipes |= recipe
 	if (possible_recipes.len==0)
