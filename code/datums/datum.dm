@@ -32,4 +32,17 @@
 
 	tag = null
 	SSnanoui.close_uis(src)
+	var/list/dc = datum_components
+	if(dc)
+		var/all_components = dc[/datum/component]
+		if(length(all_components))
+			for(var/I in all_components)
+				var/datum/component/C = I
+				C._RemoveNoSignal()
+				qdel(C)
+		else
+			var/datum/component/C = all_components
+			C._RemoveNoSignal()
+			qdel(C)
+		dc.Cut()
 	return QDEL_HINT_QUEUE
