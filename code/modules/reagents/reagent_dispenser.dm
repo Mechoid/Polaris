@@ -405,7 +405,7 @@
 /obj/structure/reagent_dispensers/acid/Initialize()
 	. = ..()
 	reagents.add_reagent("sacid", 1000)
-	
+
 //Cooking oil refill tank
 /obj/structure/reagent_dispensers/cookingoil
 	name = "cooking oil tank"
@@ -429,3 +429,39 @@
 	reagents.splash_area(get_turf(src), 3)
 	visible_message(span("danger", "The [src] bursts open, spreading oil all over the area."))
 	qdel(src)
+
+/*
+ * Generic variant.
+ */
+
+/obj/structure/reagent_dispensers/generic
+	name = "chemtank"
+	desc = "A chemtank."
+	icon = 'icons/obj/objects.dmi'
+	icon_state = "chemtank"
+	amount_per_transfer_from_this = 10
+
+	var/icon/color_lines
+
+/obj/structure/reagent_dispensers/generic/Initialize()
+	..()
+
+	QDEL_NULL(InputSocket)
+
+	InputSocket = new /obj/item/hose_connector/input/active/iconrefresher(src)
+
+/obj/structure/reagent_dispensers/generic/update_icon()
+	..()
+
+	cut_overlays()
+
+	if(!color_lines)
+		color_lines = new/icon(icon, "[icon_state]_overlay")
+
+	if(reagents.total_volume >= 1)
+		var/list/hextorgb = hex2rgb(reagents.get_color())
+		color_lines.GrayScale()
+
+		color_lines.Blend(rgb(hextorgb[1],hextorgb[2],hextorgb[3]),ICON_MULTIPLY)
+
+		add_overlay(color_lines)

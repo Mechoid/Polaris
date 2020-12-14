@@ -727,6 +727,10 @@
 ///from monkey CtrlClickOn(): (/mob)
 #define COMSIG_XENO_MONKEY_CLICK_CTRL "xeno_monkey_click_ctrl"
 
+// /datum/component/swabbing signals
+#define COMSIG_SWAB_FOR_SAMPLES "swab_for_samples"						///Called when you try to swab something using the swabable component, includes a mutable list of what has been swabbed so far so it can be modified.
+	#define COMPONENT_SWAB_FOUND (1<<0)
+
 ///SSalarm signals
 #define COMSIG_TRIGGERED_ALARM "ssalarm_triggered"
 #define COMSIG_CANCELLED_ALARM "ssalarm_cancelled"

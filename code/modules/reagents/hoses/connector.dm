@@ -115,6 +115,12 @@
 	if(carrier)
 		reagents.trans_to_obj(carrier, reagents.maximum_volume)
 
+/obj/item/hose_connector/input/active/iconrefresher/process()
+	..()
+
+	if(carrier)
+		carrier.update_icon()
+
 /obj/item/hose_connector/output
 	name = "hose output"
 	flow_direction = HOSE_OUTPUT
